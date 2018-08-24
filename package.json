@@ -1,0 +1,32 @@
+{
+  "name": "hashtag-stream-set",
+  "version": "0.0.0",
+  "description": "a StreamSet subtype that requires hashtagging to assure \"stream group completeness\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chiefbiiko/hashtag-stream-set.git"
+  },
+  "keywords": [
+    "hashtag",
+    "stream",
+    "set",
+    "group",
+    "completeness"
+  ],
+  "author": "Noah Anabiik Schwarz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chiefbiiko/hashtag-stream-set/issues"
+  },
+  "homepage": "https://github.com/chiefbiiko/hashtag-stream-set#readme",
+  "devDependencies": {
+    "tape": "^4.9.1"
+  },
+  "dependencies": {
+    "stream-set": "^1.1.0"
+  }
+}
