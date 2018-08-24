@@ -3,7 +3,7 @@ const { PassThrough } = require('stream')
 const hashtagStreamSet = require('./index.js')
 
 tape('add', t => {
-  var set = hashtagStreamSet()
+  const set = hashtagStreamSet()
   set.add('#fraud', new PassThrough())
   set.add('#fraud', new PassThrough())
   set.add('#money', new PassThrough())
@@ -15,7 +15,7 @@ tape('add', t => {
 })
 
 tape('delete', t => {
-  var set = hashtagStreamSet()
+  const set = hashtagStreamSet()
   const a = new PassThrough()
   const b = new PassThrough()
   const c = new PassThrough()
@@ -26,24 +26,23 @@ tape('delete', t => {
   t.equal(set.size, 1, 'size 1')
   set.delete('#money')
   t.equal(set.size, 0, 'size 0')
-  var pending = 3
-  ;[ a, b, c ].forEach(stream => {
+  ;[ a, b, c ].forEach((stream, i, arr) => {
     t.notOk(stream._hashtag, '_hashtag prop undefined')
-    if (!--pending) t.end()
+    if (i === arr.length - 1) t.end()
   })
 })
 
 tape('willDelete', t => {
-  var set = hashtagStreamSet()
+  const set = hashtagStreamSet()
   const a = new PassThrough()
   const b = new PassThrough()
   const c = new PassThrough()
   set.add('#fraud', a, b)
   set.add('#money', c)
-  set.delete('#money', (tag, rm_streams, doDelete) => {
-    t.equal(rm_streams.length, 1, 'rm_streams.length 1')
+  set.delete('#money', (tag, del_streams, doDelete) => {
+    t.equal(del_streams.length, 1, 'del_streams.length 1')
     t.equal(set.size, 3, 'set size still 3')
-    rm_streams.forEach(stream => stream.destroy())
+    del_streams.forEach(stream => stream.destroy())
     doDelete()
     t.equal(set.size, 2, 'set size down to 2')
     t.end()
