@@ -1,6 +1,6 @@
 {
   "name": "hashtag-stream-set",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "a StreamSet subtype that requires hashtagging to assure \"stream group completeness\"",
   "main": "index.js",
   "scripts": {
