@@ -3,35 +3,32 @@ const { inherits } = require('util')
 
 const isTruthyString = x => x && typeof x === 'string'
 
-function HashtagStreamSet (willDelete) {
-  if (!(this instanceof HashtagStreamSet))
-    return new HashtagStreamSet(willDelete)
+function HashtagStreamSet (willDel) {
+  if (!(this instanceof HashtagStreamSet)) return new HashtagStreamSet(willDel)
   StreamSet.call(this)
-  this.on('remove', this._onremove.bind(this, willDelete))
+  this._onremove = function (willDel, stream) {
+    this._delete(stream._hashtag, willDel)
+  }.bind(this, willDel)
+  this.on('remove', this._onremove)
 }
 
 inherits(HashtagStreamSet, StreamSet)
 
-HashtagStreamSet.prototype._onremove = function (willDelete, stream) {
-  this._delete(stream._hashtag, willDelete)
-}
-
-HashtagStreamSet.prototype._doDelete = function (tag) {
-  var rm_stream
-  while ((rm_stream = this.streams.find(stream => stream._hashtag === tag))) {
-    rm_stream._hashtag = undefined
+HashtagStreamSet.prototype._doDel = function (tag) {
+  var del_stream
+  while ((del_stream = this.streams.find(stream => stream._hashtag === tag))) {
+    del_stream._hashtag = undefined
     this.off('remove', this._onremove)
-    this.remove(rm_stream)
+    this.remove(del_stream)
     this.on('remove', this._onremove)
   }
 }
 
-HashtagStreamSet.prototype._delete = function (tag, willDelete) {
-  if (typeof willDelete !== 'function')
-    willDelete = (tag, streams, doDelete) => doDelete()
-  const rm_streams = this.streams.filter(stream => stream._hashtag === tag)
-  if (!rm_streams.length) return false
-  willDelete(tag, rm_streams, this._doDelete.bind(this, tag))
+HashtagStreamSet.prototype._delete = function (tag, willDel) {
+  if (typeof willDel !== 'function') willDel = (tag, streams, doDel) => doDel()
+  const del_streams = this.streams.filter(stream => stream._hashtag === tag)
+  if (!del_streams.length) return false
+  willDel(tag, del_streams, this._doDel.bind(this, tag))
   return true
 }
 
@@ -46,9 +43,9 @@ HashtagStreamSet.prototype.add = function (tag, ...streams) {
     return true
 }
 
-HashtagStreamSet.prototype.delete = function (tag, willDelete) {
+HashtagStreamSet.prototype.delete = function (tag, willDel) {
   if (!isTruthyString(tag)) throw new Error('tag is not a truthy string')
-  return this._delete(tag, willDelete)
+  return this._delete(tag, willDel)
 }
 
 module.exports = HashtagStreamSet
