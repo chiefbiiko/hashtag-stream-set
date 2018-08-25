@@ -6,9 +6,10 @@ const isTruthyString = x => x && typeof x === 'string'
 function HashtagStreamSet (willDel) {
   if (!(this instanceof HashtagStreamSet)) return new HashtagStreamSet(willDel)
   StreamSet.call(this)
+  this._willDel = willDel
   this._onremove = function (willDel, stream) {
     this._delete(stream._hashtag, willDel)
-  }.bind(this, willDel)
+  }.bind(this, this._willDel)
   this.on('remove', this._onremove)
 }
 
@@ -45,7 +46,7 @@ HashtagStreamSet.prototype.add = function (tag, ...streams) {
 
 HashtagStreamSet.prototype.delete = function (tag, willDel) {
   if (!isTruthyString(tag)) throw new Error('tag is not a truthy string')
-  return this._delete(tag, willDel)
+  return this._delete(tag, willDel || this._willDel)
 }
 
 module.exports = HashtagStreamSet
