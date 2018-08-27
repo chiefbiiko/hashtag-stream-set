@@ -24,15 +24,8 @@ Check out `./usage.js`:
 const { PassThrough } = require('stream')
 const hashtagStreamSet = require('hashtag-stream-set')
 
-const set = hashtagStreamSet()
-const a = new PassThrough()
-const b = new PassThrough()
-const c = new PassThrough()
-
-set.add('#fraud', a)
-set.add('#money', b, c)
-
-set.delete('#money', (tag, del_streams, doDelete) => { // willDelete hook...
+// creating a HashtagStreamSet instance with a bound willDelete hook
+const set = hashtagStreamSet((tag, del_streams, doDelete) => {
   console.log('set.size', set.size) // 3
   console.log('del_streams.length', del_streams.length) // 2
   // do some kind of cleanup
@@ -41,26 +34,35 @@ set.delete('#money', (tag, del_streams, doDelete) => { // willDelete hook...
   doDelete()
 })
 
+const a = new PassThrough()
+const b = new PassThrough()
+const c = new PassThrough()
+
+set.add('#fraud', a)
+set.add('#money', b, c)
+
+set.delete('#money')
+
 console.log('set.size', set.size) // 1
 ```
 
-Note you can optionally pass a `willDelete` hook as first argument to the `HashtagStreamSet` constructor to have that function be used for all removals. When having such a general `willDelete` hook you can still specify one in a call of the `HashtagStreamSet.prototype.delete` method and it will override the general one for the current tag deletion.
-
-## API
-
-### `set = new HashtagStreamSet([willDelete(tag, del_streams, doDelete)])`
-
-### `set.add(tag, ...streams)`
-
-### `set.delete(tag[, willDelete(tag, del_streams, doDelete)])`
+Note you can optionally pass a `willDelete` hook as second argument to a call of the `set.delete` method and it will override the general one (the optional hook passed to the constructor) for the current tag deletion.
 
 ***
 
 ## API
 
-### `hashtag-stream-set`
+### `set = new HashtagStreamSet([willDelete(tag, del_streams, doDelete)])`
 
-hashtag-stream-set
+Create a `HashtagStreamSet` instance. `willDelete` is an optional function that will be called with all streams that are about to be removed from the set. Removal may be triggered by an end of a stream  ([`eos`](https://github.com/mafintosh/eos)), a call to `set.remove(stream)` or `set.delete(tag)`. Make sure to call the `doDelete` callback to perform actual deletion.
+
+### `set.add(tag, ...streams)`
+
+Add one or multiple streams to the set. `tag` must be a string and will be set as `stream._hashtag` for every stream added. Note that the `_hashtag` property will be removed from stream instances as they get removed from the set.
+
+### `set.delete(tag[, willDelete(tag, del_streams, doDelete)])`
+
+Delete all streams with their `_hashtag` property equal to `tag`. If `willDelete` is provided it will override any hook passed at instantiation.
 
 ***
 
