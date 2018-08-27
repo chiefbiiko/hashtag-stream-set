@@ -11,7 +11,7 @@ A `StreamSet` subtype whose `add` method tags all input streams in order to ensu
 ## Get it!
 
 ```
-npm install --save chiefbiiko/hashtag-stream-set
+npm install --save hashtag-stream-set
 ```
 
 ***
