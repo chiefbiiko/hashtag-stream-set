@@ -19,7 +19,7 @@ HashtagStreamSet.prototype._doDel = function (tag) {
   var del_stream
   while ((del_stream = this.streams.find(stream => stream._hashtag === tag))) {
     del_stream._hashtag = undefined
-    this.off('remove', this._onremove)
+    this.removeListener('remove', this._onremove)
     this.remove(del_stream)
     this.on('remove', this._onremove)
   }
